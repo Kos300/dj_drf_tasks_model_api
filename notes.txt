@@ -110,6 +110,162 @@ copy con .gitignore
 сохранить и закрыть == на новой строке == F6 или CTRL+Z, и + Enter.
 
 
+СОЗДАДИМ МОДЕЛЬ
+class Todo(models.Model):
+    title = models.CharField(max_length=150)
+    description = models.CharField(max_length=400, blank=True)
+    # дата создания
+    date = models.DateTimeField(auto_now_add=True)
+    # флаг - выполнена ли задача
+    done = models.BooleanField(default=False, null=False)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
+
+    # строковое представление по названию
+    def __str__(self):
+        return self.title
+
+зарегистрируем модель в админке
+и пропишем что нужно видеть при работе с моделью
+# опишем что будет видно в админке при работе с моделью
+class TodoAdmin(admin.ModelAdmin):
+    # видимые поля в списке
+    list_display = ('id', 'title', 'category', 'description', 'date', 'done')
+    list_display_links = ('id', 'title')
+    # по каким полям искать
+    search_fields = ('id', 'title')
+    # какие поля изменять из списка не входя в карточку
+    list_editable = ('done',)
+    # по каким параметрам можем фильтровать
+    list_filter = ('done', 'category')
+
+admin.site.register(Todo, TodoAdmin)
+
+
+нам потребуется сериалайзер для сериализации модеи в json представление
+в каталоге Приложения создаем файл serializers.py
+from rest_framework import serializers
+from .models import Todo
+# Todo serializer
+# описываем что все поля модели Todo
+# нужно сериализовать в json
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = '__all__'
+
+в каталоге Приложения создаем файл api.py
+from .models import Todo
+from rest_framework import viewsets, permissions
+from .serializers import TodoSerializer
+# Todo ViewSet
+# определим queryset, как объекты Todo в БД.
+class TodoViewSet(viewsets.ModelViewSet):
+    queryset = Todo.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = TodoSerializer
+
+
+в каталоге Приложения создаем файл urls.py
+создадим default Роутер (по умолчанию)
+и зарегистрируем api url с queryset. который создали ранее
+from rest_framework import routers
+from .api import TodoViewSet
+
+router = routers.DefaultRouter()
+router.register('api/todo', TodoViewSet, 'todo')
+# router.register('api/categories', CategoryViewSet, 'categories')
+
+urlpatterns = router.urls
+
+
+допишем url ПРОЕКТА. 
+from django.contrib import admin
+from django.urls import path, include
+и
+допишем ссылку на урлы из приложения
+path('', include('todo.urls')),
+
+
+ДОБАВИТЬ в SETTINGS ПРОЕКТА
+приложение и rest_framework
+INSTALLED_APPS = [
+...
+    'app_dj_user_1.apps.AppDjUser1Config',
+    'rest_framework',
+
+
+в папке проекта Джанго. 
+СОЗДАДИМ МИГРАЦИИ
+python manage.py makemigrations
+(внес исправления, убрал лишнее, файл миграций создан)
+ВЫПОЛНИМ МИГРАЦИИ 
+dj_user_1\proj_dj_user_1>python manage.py migrate 
+
+
+
+ЗАПУСТИМ СЕРВЕР
+python manage.py runserver
+	страница http://127.0.0.1:8000/ 
+	Api Root == The default basic root view for DefaultRouter 
+	(Django REST framework)
+
+остановим сервер CTRL+C
+для входа в админку http://127.0.0.1:8000/admin/
+создадим пользователя
+	python manage.py createsuperuser
+	
+ЗАПУСТИМ СЕРВЕР
+	Все ок!
+
+Откроем Postman для проверки запросов,
+GET к http://127.0.0.1:8000/api/todo
+	(возвращает задачи из БД)
+
+POST (создадим запись о задаче в БД)
+http://127.0.0.1:8000/api/todo/
+в headers добавим 
+key - Content-Type
+value - application/json
+в Body - RAW - JSON:
+{
+"title": "Забрать обувь из ремонта"
+}
+Все ок, Запись создана! 
+
+
+
+PUT - изменим запись задачи с id 4
+адрес: http://127.0.0.1:8000/api/todo/4/
+в headers добавим 
+key - Content-Type
+value - application/json
+в Body - RAW - JSON:
+{
+"title": "Забрать обувь из ремонта",
+"description": "Работа оплачена"
+}
+РЕЗУЛЬТАТ:
+{
+    "id": 4,
+    "title": "Забрать обувь из ремонта",
+    "description": "Работа оплачена",
+    "date": "2023-03-21T18:58:25.229567Z",
+    "done": false
+}
+Ок, описание добавлено!.
+
+
+
+DELETE - удалим запись с id 4
+адрес: http://127.0.0.1:8000/api/todo/4/
+Результат
+Status 204 No Content
+Ок, запись удалена!
+
+
+
 
 
 
