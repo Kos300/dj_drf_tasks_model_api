@@ -1,0 +1,120 @@
+django user model
+from Pasha IT
+https://www.youtube.com/watch?v=TmDetBtk5rw&list=WL&index=5
+
+в CMD 
+перейдем в нужную директорию 
+и проверим ее содержимое
+cd ...
+dir
+
+создать директорию
+mkdir dj_user_1
+
+
+создать текстовый файл
+1) notepad notes.txt
+через notepad
+откроет в новом окне
+или
+2)copy con filename.txt
+создаст и даст включит ввод с терминала.
+сохранить и закрыть F6 или CTRL+Z, и Enter.
+
+прим: удалить лишний файл
+del filename.txt
+
+
+
+проверить версию python
+python --version
+	Python 3.10.5
+
+проверить версию pip
+python -m pip --version
+	pip 22.3.1 from C:\python\lib\site-packages\pip (python 3.10)
+
+обновить pip
+py -m ensurepip --upgrade
+	Looking in links: c:\Users\MASTER\AppData\Local\Temp\tmppxwudy93
+	Requirement already satisfied: setuptools in c:\python\lib\site-packages (58.1.0)
+	Requirement already satisfied: pip in c:\python\lib\site-packages (22.3.1)
+
+python -m pip --version
+	pip 22.3.1 from C:\python\lib\site-packages\pip (python 3.10)
+
+
+создать виртуальное окружение
+python -m venv env
+
+активировать его
+env\Scripts\activate
+	(env) C:\Users\MASTER\ ... 
+
+обновить pip 
+py -m pip install --upgrade pip
+
+установить Django
+py -m pip install Django
+
+проверить версию Django
+django-admin --version
+	4.1.7	
+
+создать проект 
+и перейти в его директорию
+django-admin startproject dj_user_1 && cd dj_user_1
+
+	прим:
+	& separates commands on a line.
+	&& executes this command only if previous command's errorlevel is 0.
+
+в директории выше 
+установить djangorestframework
+cd ..
+pip install djangorestframework
+
+установить django-rest-knox
+pip install django-rest-knox
+
+
+сохранить установленные зависимости 
+в файл requirements.txt
+pip freeze > requirements.txt
+
+
+вернуться в дир-ю проекта
+создать приложение внутри проекта
+cd dj_user_1
+python manage.py startapp app_dj_user_1 
+
+
+альтернативный вариант усатновки зависимостей
+pip install -r requirements.txt
+	Successfully installed Django-4.1.7 asgiref-3.6.0 cffi-1.15.1 cryptography-39.0.2 django-rest-knox-4.2.0 djangorestframework-3.14.0 pycparser-2.21 pytz-2022.7.1 sqlparse-0.4.3 tzdata-2022.7
+
+
+**************
+сделать папку django-проеекта корнем проекта. 
+в PC. == Mark directory as Source root
+
+
+git init
+	инициализировать git
+git status
+	проверить статус файлов (пока инекс пустой)
+
+создать файл .gitignore
+copy con .gitignore
+создаст и включит ввод с терминала.
+сохранить и закрыть == на новой строке == F6 или CTRL+Z, и + Enter.
+
+
+
+
+
+
+
+
+
+
