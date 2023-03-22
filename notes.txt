@@ -265,6 +265,113 @@ Status 204 No Content
 Ок, запись удалена!
 
 
+*************
+добавим категории задач.
+
+В МОДЕЛЯХ
+class Category(models.Model):
+    title = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.title
+
+добавил
+class Todo(models.Model):
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
+
+
+В АДМИН
+from .models import Todo, Category
+class TodoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'category', 'description', 'date', 'done')
+    list_filter = ('done', 'date', 'category')
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title')
+    list_display_links = ('title',)
+    search_fields = ('title',)
+
+admin.site.register(Category, CategoryAdmin)
+
+
+
+В serializers
+from .models import Todo, Category
+# Category serializer
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+В api
+from .models import Todo, Category
+from rest_framework import viewsets, permissions
+from .serializers import TodoSerializer, CategorySerializer
+
+# Category ViewSet
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = CategorySerializer
+
+
+В URLS
+from rest_framework import routers
+from .api import TodoViewSet, CategoryViewSet
+
+router = routers.DefaultRouter()
+router.register('api/todo', TodoViewSet, 'todo')
+router.register('api/categories', CategoryViewSet, 'categories')
+
+urlpatterns = router.urls
+
+
+
+cd proj_dj_user_1
+СОЗДАДИМ И ПРИМЕНИМ МИГРАЦИИ в папке проекта dj_user_1\proj_dj_user_1>
+python manage.py makemigrations 
+Migrations for 'app_dj_user_1':
+  app_dj_user_1\migrations\0002_category_todo_category.py
+    - Create model Category
+    - Add field category to todo
+
+python manage.py migrate   
+	миграции выполнены
+
+все работает, добавил категории задач, исправил в модели задач:
+возможность изменения категории из общего списка, пустое поле для категории:
+
+в моделях: 
+class Todo(models.Model):
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, blank=True)
+
+в админ:
+class TodoAdmin(admin.ModelAdmin):
+    # какие поля изменять из списка не входя в карточку
+    list_editable = ('done', 'category',)
+
+
+в моделях:
+добавил возможность удаления Категории, и замены ее значения в связанных Задачах на дефолтное. 
+        # SET_DEFAULT - добавил default=None, при удалении Категории в связанных Задачах изменит значение на дефолтное.
+    category = models.ForeignKey('Category', on_delete=models.SET_DEFAULT, null=True, blank=True, default=None)
+варианты on_delete=: 
+        # PROTECT - при удалении Категории предлагает удалить связанные Задачи
+    # category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, blank=True)
+        # DO_NOTHING - позволяет удалить Категорию, но если есть связанные Задачи то выдает ошибку
+    # category = models.ForeignKey('Category', on_delete=models.DO_NOTHING, null=True, blank=True)
+
+
+
+
+
+
+
+
+
 
 
 
