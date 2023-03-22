@@ -1,6 +1,4 @@
-django user model
-from Pasha IT
-https://www.youtube.com/watch?v=TmDetBtk5rw&list=WL&index=5
+Django API, DRF,  + админка: taskslist model, categorys
 
 в CMD 
 перейдем в нужную директорию 
@@ -363,6 +361,18 @@ class TodoAdmin(admin.ModelAdmin):
     # category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, blank=True)
         # DO_NOTHING - позволяет удалить Категорию, но если есть связанные Задачи то выдает ошибку
     # category = models.ForeignKey('Category', on_delete=models.DO_NOTHING, null=True, blank=True)
+
+
+git:
+
+cd .. (в папку dj_user_1)
+git status
+git add .
+git commit -m "add categorys to tasks, change admin & tasks model"
+
+git status
+	On branch master
+	nothing to commit, working tree clean
 
 
 
